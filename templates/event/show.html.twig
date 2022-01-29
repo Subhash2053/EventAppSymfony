@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Event{% endblock %}
+
+{% block body %}
+
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Home</a></li>
+    <li class="breadcrumb-item"><a href="{{ path('event_index') }}">Event</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Event</li>
+  </ol>
+</nav>
+    <h1>Event</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ event.id }}</td>
+            </tr>
+            <tr>
+                <th>Title</th>
+                <td>{{ event.title }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ event.description }}</td>
+            </tr>
+            <tr>
+                <th>Sdate</th>
+                <td>{{ event.sdate ? event.sdate|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Edate</th>
+                <td>{{ event.edate ? event.edate|date('Y-m-d') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+   
+
+    <a href="{{ path('event_edit', {'id': event.id}) }}" class="btn btn-success">edit</a>
+
+    
+{% endblock %}

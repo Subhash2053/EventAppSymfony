@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Event List{% endblock %}
+
+{% block body %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Home</a></li>
+   
+    <li class="breadcrumb-item active" aria-current="page">Event List</li>
+  </ol>
+</nav>
+<div>
+    <h1 class="pull-left">Event List</h1>
+   <a href="{{ path('event_new') }}" class="btn btn-primary pull-right">Create new</a>
+</div>
+    <table class="table table-bordered border-primary">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Sdate</th>
+                <th>Edate</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for event in events %}
+            <tr>
+                <td>{{ event.id }}</td>
+                <td>{{ event.title }}</td>
+                <td>{{ event.description }}</td>
+                <td>{{ event.sdate ? event.sdate|date('Y-m-d') : '' }}</td>
+                <td>{{ event.edate ? event.edate|date('Y-m-d') : '' }}</td>
+                <td>
+                    <a href="{{ path('event_show', {'id': event.id}) }}" class="btn btn-info">show</a>
+                    <a href="{{ path('event_edit', {'id': event.id}) }}" class="btn btn-success">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    
+{% endblock %}
+
+
+

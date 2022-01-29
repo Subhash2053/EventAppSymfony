@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Event{% endblock %}
+
+{% block body %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Home</a></li>
+    <li class="breadcrumb-item"><a href="{{ path('event_index') }}">Event</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Edit Event</li>
+  </ol>
+</nav>
+
+    <h1>Edit Event</h1>
+
+    {{ include('event/_form.html.twig', {'button_label': 'Update'}) }}
+
+    
+
+   
+{% endblock %}

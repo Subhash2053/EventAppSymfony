@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>
+            Sign In
+                    
+        </title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+
+        <link rel="stylesheet" href="{{ asset('build/app.css') }}">
+    
+
+    </head>
+    <body>
+
+       
+            <div class="container">
+
+                <div class="row justify-content-center">
+
+                    <div class="col-md-4 col-lg-4">
+                        {% if error %}
+                            <div class="alert alert-danger" role="alert">
+
+                                {{ error.messageKey|trans(error.messageData, 'security') }}
+                            </div>
+                        {% endif %}
+                        <div class="d-flex">
+                            <div class="w-100">
+                                <h3 class="mb-4">
+                                    Sign In
+                                                                                                
+                                                                    
+                                </h3>
+                            </div>
+
+                        </div>
+                        <form action="{{ path('login') }}" method="post">
+                            <div class="form-group mb-3">
+                                <label class="label" for="name">
+                                    Username
+                                                                                                
+                                                                    
+                                </label>
+                                <input type="email" class="form-control" placeholder="Username" id="username" name="_username" required>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label class="label" for="password">
+                                    Password
+                                                                                                    
+                                                                    
+                                </label>
+                                <input type="password" class="form-control" placeholder="Password" id="password" name="_password" required>
+                            </div>
+
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                            <input type="hidden" name="_target_path" value="/event" />
+                            <div class="form-group">
+                                <button type="submit" class="form-control btn btn-primary rounded submit px-3">
+                                    Sign In
+                                                                                                            
+                                                                    
+                                </button>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html></div></div></section><script src="{{ asset('build/app.js') }}"></script></body></html>
