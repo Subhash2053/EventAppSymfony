@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\EventRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 class Event
@@ -13,15 +15,27 @@ class Event
     #[ORM\Column(type: 'integer')]
     private $id;
 
+     /**
+     * @Assert\NotBlank
+     * @Assert\Length(min=3)
+     */
     #[ORM\Column(type: 'string', length: 255)]
     private $title;
 
     #[ORM\Column(type: 'text', nullable: true)]
     private $description;
 
+     /**
+     * @Assert\NotBlank
+    
+     */
     #[ORM\Column(type: 'date')]
     private $sdate;
 
+     /**
+     * @Assert\NotBlank
+
+     */
     #[ORM\Column(type: 'date')]
     private $edate;
 
@@ -76,5 +90,18 @@ class Event
         $this->edate = $edate;
 
         return $this;
+    }
+
+
+    /**
+     * @Assert\Callback
+     */
+    public function validate(ExecutionContextInterface $context, $payload)
+    {
+        if ($this->getSdate() > $this->getEdate()) {
+            $context->buildViolation('Start date must be earlier than end date')
+                ->atPath('sdate')
+                ->addViolation();
+        }
     }
 }

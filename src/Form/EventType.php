@@ -6,9 +6,10 @@ use App\Entity\Event;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotNull;
 
 class EventType extends AbstractType
 {
@@ -29,8 +30,26 @@ class EventType extends AbstractType
                 ],
             ])
             ->add('description')
-            ->add('sdate')
-            ->add('edate')
+            ->add('sdate', DateType::class, [
+                
+                'widget' => 'single_text',
+              
+                'constraints' => [
+                    new NotNull([
+                        'message' => 'You should add Start Date first.',
+                    ])
+                ],
+            ])
+            ->add('edate', DateType::class, [
+               
+                'widget' => 'single_text',
+                
+                'constraints' => [
+                    new NotNull([
+                        'message' => 'You should add  End Date first.',
+                    ])
+                    ],
+            ])
         ;
     }
 
