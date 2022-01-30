@@ -4,7 +4,14 @@ $primary: darken(#428bca, 20%);
 
 a {
   text-decoration: none;
+
+  .disabled {
+    color: gray;
+    pointer-events: none;
+    opacity: 0.5;
+  }
 }
+
 .main-content {
   background-color: #ffffff;
   padding: 20px;

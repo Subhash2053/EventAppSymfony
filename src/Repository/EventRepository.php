@@ -15,35 +15,31 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class EventRepository extends ServiceEntityRepository
 {
-    public const PAGINATOR_PER_PAGE = 2;
-
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Event::class);
     }
 
-
-    public function getEventPaginator(bool $includeFinishedEvents = false,bool $includeUpcomingEvents = false, int $offset): Paginator
+    /**
+        * @return Event[]
+        */
+    public function getEvent(bool $includeFinishedEvents = false, bool $includeUpcomingEvents = false): array
     {
-        $qb = $this->createQueryBuilder('p') 
+        $qb = $this->createQueryBuilder('p')
         ->orderBy('p.sdate', 'ASC');
 
         $today= date('Y-m-d');
-        if (!$includeUpcomingEvents) {
-            $qb->andWhere('p.sdate > :today')
+        if ($includeUpcomingEvents) {
+            $qb->where('p.sdate > :today')
             ->setParameter('today', $today);
         }
-        if (!$includeFinishedEvents) {
-            $qb->andWhere('p.edate < :today')
+        if ($includeFinishedEvents) {
+            $qb->where('p.edate < :today')
             ->setParameter('today', $today);
         }
 
-          
-        $qb->setMaxResults(self::PAGINATOR_PER_PAGE)
-           ->setFirstResult($offset);
     
-       $query = $qb->getQuery();
-        return new Paginator($query);
+        return $qb->getQuery()->getResult();
     }
 
 
@@ -63,7 +59,7 @@ class EventRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
-    
+
 
     /*
     public function findOneBySomeField($value): ?Event

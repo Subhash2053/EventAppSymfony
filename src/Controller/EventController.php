@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
+
 #[Route('/event')]
 /**
  * @IsGranted("ROLE_USER")
@@ -21,17 +22,20 @@ class EventController extends AbstractController
     #[Route('', name: 'event_index', methods: ['GET'])]
     public function index(Request $request, EventRepository $eventRepository): Response
     {
-        $offset = max(0, $request->query->getInt('offset', 0));
-        $includeFinishedEvents = $request->query->getBoolean('includeFinishedEvents', false);
-        $includeUpcomingEvents = $request->query->getBoolean('includeUpcomingEvents', false);
-        $paginator = $eventRepository->getEventPaginator($includeFinishedEvents, $includeUpcomingEvents, $offset);
-       
-        return new Response($this->render('event/index.html.twig', [
+        
+        $filter = $request->query->get('filterby', '');
+        $includeFinishedEvents= ($filter == 'finishedEvents');
+        $includeUpcomingEvents =  ($filter == 'upcomingEvents');
+     
+        $output= [
                      
-                   'events' => $paginator,
-                   'previous' => $offset - eventRepository::PAGINATOR_PER_PAGE,
-                   'next' => min(count($paginator), $offset + eventRepository::PAGINATOR_PER_PAGE),
-                 ]));
+            'events' => $eventRepository->getEvent($includeFinishedEvents, $includeUpcomingEvents),
+           
+            'finishedEvents'=>$includeFinishedEvents,
+            'upcomingEvents'=>$includeUpcomingEvents,
+        ];
+       
+        return $this->render('event/index.html.twig', $output);
     }
 
     #[Route('/new', name: 'event_new', methods: ['GET', 'POST'])]
@@ -83,11 +87,24 @@ class EventController extends AbstractController
     #[Route('/{id}', name: 'event_delete', methods: ['POST'])]
     public function delete(Request $request, Event $event, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$event->getId(), $request->request->get('_token'))) {
+
+        
+        $response = new Response();
+      
+        if ($this->isCsrfTokenValid('delete'.$event->getId(), $request->request->get('_token',''))) {
+           
             $entityManager->remove($event);
             $entityManager->flush();
-        }
+            $response->setContent(json_encode([
+                'message' => 'data deleted',
+                ]));
+        }else{
 
-        return $this->redirectToRoute('event_index', [], Response::HTTP_SEE_OTHER);
+            $response->setContent(json_encode([
+                'error' => 'CSRF problem',
+                ]));
+        }
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
     }
 }

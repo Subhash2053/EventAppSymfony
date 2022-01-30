@@ -1,53 +1,220 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Event List{% endblock %}
-
-{% block body %}
-<nav aria-label="breadcrumb">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="/">Home</a></li>
-   
-    <li class="breadcrumb-item active" aria-current="page">Event List</li>
-  </ol>
-</nav>
-<div>
-    <h1 class="pull-left">Event List</h1>
-   <a href="{{ path('event_new') }}" class="btn btn-primary pull-right">Create new</a>
-</div>
-    <table class="table table-bordered border-primary">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Sdate</th>
-                <th>Edate</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for event in events %}
-            <tr>
-                <td>{{ event.id }}</td>
-                <td>{{ event.title }}</td>
-                <td>{{ event.description }}</td>
-                <td>{{ event.sdate ? event.sdate|date('Y-m-d') : '' }}</td>
-                <td>{{ event.edate ? event.edate|date('Y-m-d') : '' }}</td>
-                <td>
-                    <a href="{{ path('event_show', {'id': event.id}) }}" class="btn btn-info">show</a>
-                    <a href="{{ path('event_edit', {'id': event.id}) }}" class="btn btn-success">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="6">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
+{% block title %}
+    Event List
+    
     
 {% endblock %}
 
+{% block body %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="/">
+                    Home
+                                             
+                                    
+                </a>
+            </li>
 
+            <li class="breadcrumb-item active" aria-current="page">
+                Event List
+                         
+                            
+            </li>
+        </ol>
+    </nav>
+    <div>
+        <h5 class="pull-left">
+            {% if finishedEvents %}
+                Finished 
+              
+            {% elseif upcomingEvents %}
+                Upcoming         
+            {% endif %}
+            Event List (Total Data:         
+            {{ events|length }}
+            )
+         
+        </h5>
+        <a href="{{ path('event_new') }}" class="btn btn-primary pull-right">
+            Create new
+            
+        </a>
+    </div>
 
+    <div class="">
+
+        {% if finishedEvents == false %}
+            <a href="{{ path('event_index',{'filterby':'finishedEvents'}) }}" class="m-2 btn-sm btn-primary pull-left ">
+                Finished Events          
+             
+            </a>
+        {% endif %}
+        {% if upcomingEvents== false %}
+            <a href="{{ path('event_index',{'filterby':'upcomingEvents'}) }}" class="m-2 btn-sm btn-warning pull-left  ">
+                Upcoming Events          
+                
+            </a>
+        {% endif %}
+        {% if upcomingEvents== true or  finishedEvents== true %}
+        <a href="{{ path('event_index') }}" class="m-2 btn-sm btn-secondary pull-left">
+            Clear Filter         
+          
+        </a>
+    {% endif %}
+    </div>
+
+    <table class="table table-bordered border-primary">
+        <thead>
+            <tr>
+                <th>
+                    Id
+                                                                                                                                                                                                                             
+                </th>
+                <th>
+                    Title
+            
+                </th>
+                <th>
+                    Description
+                    
+                </th>
+                <th>
+                    Sdate
+                 
+                </th>
+                <th>
+                    Edate
+                     
+                </th>
+                <th>
+                    actions
+                                         
+                                    
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in events %}
+                <tr>
+                    <td>
+                        {{ event.id }}
+                    </td>
+                    <td>
+                        {{ event.title }}
+                    </td>
+                    <td>
+                        {{ event.description }}
+                    </td>
+                    <td>
+                        {{ event.sdate ? event.sdate|date('Y-m-d') : '' }}
+                    </td>
+                    <td>
+                        {{ event.edate ? event.edate|date('Y-m-d') : '' }}
+                    </td>
+                    <td>
+                        <a href="{{ path('event_show', {'id': event.id}) }}" class="btn btn-info">
+                            show
+                                     
+                        </a>
+                        <a href="{{ path('event_edit', {'id': event.id}) }}" class="btn btn-success">
+                            edit
+                                   
+                        </a>
+                        <a class="btn btn-danger delete-event" data-id="{{ event.id }}" data-token="{{ csrf_token('delete' ~ event.id) }}">
+                            Delete
+                                    
+                        </a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6">
+                        no records found
+                                  
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function() {
+
+            $(".delete-event").click( function() { 
+                Swal.fire({
+                    title: 'Are you sure?',
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, Delete it!'
+                }).then((result) => {
+                    if (result.value) {
+		        var $ele = $(this).parent().parent();
+                 var url = '{{ path('event_delete',{'id':':id'}) }}';
+                 var id = $(this).data('id');
+                 var token = $(this).data('token');
+               
+                url = url.replace(':id', id);
+                  
+                    $.ajax({
+                        url:url,
+                        dataType: 'json',
+                        data: {_token :  token },
+                        type: 'POST',
+                        success:function(response)
+                        {
+                            if(response.error){
+                              
+                                Swal.fire(
+                                    'Error!',
+                                    response.error,
+                                    'error'
+                                )
+                               
+                            }else{
+                                const Toast = Swal.mixin({
+                                    toast: true,
+                                    position: 'top-end',
+                                    showConfirmButton: false,
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                    didOpen: (toast) => {
+                                      toast.addEventListener('mouseenter', Swal.stopTimer)
+                                      toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                    }
+                                  })
+                                  
+                                  Toast.fire({
+                                    icon: 'success',
+                                    title: 'Data deleted successfully'
+                                  })
+                                location.reload(); 
+
+                            }
+                        },
+                        error: function (response) {
+                            Swal.fire(
+                                'Error!',
+                                'Your file has not been Deleted.',
+                                'error'
+                            )
+                        }
+                    });
+
+                    }
+            })
+  });
+
+  });
+</script>
+
+{% endblock %}
